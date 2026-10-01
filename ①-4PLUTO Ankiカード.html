@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>PLUTO①-4 フラッシュカード</title>
+ <style>
+ body {
+ font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+ background-color: #f7f9fc;
+ color: #333333;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ padding: 20px;
+ margin: 0;
+ }
+
+ h1 {
+ font-size: 1.5rem;
+ color: #2c3e50;
+ margin-bottom: 10px;
+ }
+
+ .header-stats {
+ display: flex;
+ justify-content: space-between;
+ width: 100%;
+ max-width: 600px;
+ margin-bottom: 15px;
+ font-size: 1.1rem;
+ font-weight: bold;
+ color: #555;
+ padding: 0 10px;
+ }
+
+ .top-controls {
+ display: flex;
+ flex-wrap: wrap;
+ justify-content: center;
+ gap: 8px;
+ width: 100%;
+ max-width: 600px;
+ margin-bottom: 20px;
+ }
+
+ .top-btn {
+ flex: 1;
+ min-width: 130px;
+ padding: 10px 12px;
+ font-size: 0.95rem;
+ border: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-weight: bold;
+ color: white;
+ transition: background-color 0.2s, transform 0.1s;
+ box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+ }
+
+ .top-btn:active { transform: scale(0.98); }
+ 
+.btn-all { background-color: #7f8c8d; }
+ .btn-all:hover { background-color: #6c7a7d; }
+ .btn-unanswered { background-color: #3498db; }
+ .btn-unanswered:hover { background-color: #2980b9; }
+ .btn-review { background-color: #e67e22; }
+ .btn-review:hover { background-color: #d35400; }
+ .btn-incorrect { background-color: #9b59b6; }
+ .btn-incorrect:hover { background-color: #8e44ad; }
+
+ .mode-indicator {
+ font-size: 0.9rem;
+ color: #e67e22;
+ font-weight: bold;
+ margin-bottom: 10px;
+ }
+
+ #flashcard {
+ background-color: #ffffff;
+ width: 100%;
+ max-width: 600px;
+ min-height: 400px;
+ border-radius: 16px;
+ box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ padding: 30px;
+ box-sizing: border-box;
+ text-align: center;
+ position: relative;
+ }
+
+ #front-side, #back-side {
+ width: 100%;
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ }
+ 
+#back-side {
+ display: none;
+ text-align: left;
+ align-items: flex-start;
+ }
+
+ .date-badge {
+ font-size: 0.85rem;
+ background-color: #edf2f7;
+ color: #4a5568;
+ padding: 6px 14px;
+ border-radius: 20px;
+ margin-bottom: 5px;
+ font-weight: bold;
+ display: inline-block;
+ }
+
+ .srs-badge {
+ font-size: 0.8rem;
+ color: #e67e22;
+ margin-bottom: 20px;
+ font-weight: bold;
+ }
+
+ .english-text {
+ font-size: 1.4rem;
+ font-weight: bold;
+ color: #1a1a1a;
+ margin-bottom: 25px;
+ line-height: 1.4;
+ text-align: center;
+ }
+
+ .english-text-back {
+ font-size: 1.2rem;
+ font-weight: bold;
+ color: #34495e;
+ margin-bottom: 15px;
+ line-height: 1.4;
+ text-align: left;
+ width: 100%;
+ border-bottom: 2px dashed #e1e8ed;
+ padding-bottom: 15px;
+ }
+
+ .japanese-text {
+ font-size: 1.2rem;
+ font-weight: bold;
+ color: #2c3e50;
+ margin-bottom: 20px;
+ line-height: 1.6;
+ width: 100%;
+ border-bottom: 2px solid #e1e8ed;
+ padding-bottom: 15px;
+ }
+
+ .note-box {
+ background-color: #fff9e6;
+ border-left: 4px solid #f5a623;
+ padding: 15px;
+ border-radius: 4px;
+ font-size: 1rem;
+ line-height: 1.6;
+ color: #5c4716;
+ width: 100%;
+ box-sizing: border-box;
+ }
+
+ #play-audio-btn {
+ font-size: 1.1rem;
+ padding: 12px 24px;
+ border-radius: 30px;
+ background-color: #4a90e2;
+ color: white;
+ border: none;
+ cursor: pointer;
+ box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
+ transition: transform 0.1s, background-color 0.2s;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 8px;
+ font-weight: bold;
+ }
+
+ #play-audio-btn:active {
+ transform: scale(0.95);
+ background-color: #357abd;
+ }
+
+ .controls {
+ display: flex;
+ gap: 10px;
+ margin-top: 30px;
+ width: 100%;
+ max-width: 600px;
+ justify-content: center;
+ }
+
+ .action-btn {
+ flex: 1;
+ padding: 15px 10px;
+ font-size: 1rem;
+ border: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-weight: bold;
+ transition: background-color 0.2s, opacity 0.2s;
+ }
+
+ #prev-btn { background-color: #e2e8f0; color: #4a5568; }
+ #flip-btn { background-color: #4a90e2; color: white; }
+ #next-btn { background-color: #e2e8f0; color: #4a5568; }
+
+ .eval-btn {
+ flex: 1;
+ padding: 15px 5px;
+ font-size: 1rem;
+ border: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-weight: bold;
+ color: white;
+ }
+
+ #back-to-front-btn { background-color: #95a5a6; }
+ #back-to-front-btn:hover { background-color: #7f8c8d; }
+ #wrong-btn { background-color: #e74c3c; }
+ #wrong-btn:hover { background-color: #c0392b; }
+ 
+#correct-btn { background-color: #2ecc71; }
+ #correct-btn:hover { background-color: #27ae60; }
+
+ .empty-state {
+ font-size: 1.5rem;
+ color: #2ecc71;
+ font-weight: bold;
+ text-align: center;
+ line-height: 1.5;
+ }
+ </style>
+</head>
+<body>
+
+ <h1>🎧 PLUTO①-4 フラッシュカード</h1>
+
+ <div class="header-stats">
+ <span id="progress-text">1 / 128</span>
+ <span id="score-text">正解数: 0</span>
+ </div>
+ 
+<div class="mode-indicator" id="mode-indicator">現在のモード：📁 全問</div>
+
+ <div class="top-controls">
+ <button class="top-btn btn-all" onclick="setMode('all')">📁 全問</button>
+ <button class="top-btn btn-unanswered" onclick="jumpToUnanswered()">🆕 未回答へジャンプ</button>
+ <button class="top-btn btn-review" onclick="setMode('review')">📅 今日の復習</button>
+ <button class="top-btn btn-incorrect" onclick="setMode('incorrect')">🎯 未正解</button>
+ </div>
+
+ <div id="flashcard">
+ <div id="front-side">
+ <div class="date-badge" id="date-badge">最終回答日：未回答</div>
+ <div class="srs-badge" id="srs-badge"></div>
+ <div class="english-text" id="front-eng-content"></div>
+ <button id="play-audio-btn">🔊 音声を聴く</button>
+ </div>
+
+ <div id="back-side">
+ <div class="english-text-back" id="back-eng-content"></div>
+ <div class="japanese-text" id="jap-content"></div>
+ <div class="note-box" id="note-content"></div>
+ </div>
+ </div>
+
+ <div class="controls" id="controls-front">
+ <button id="prev-btn" class="action-btn" onclick="prevCard()">◀ 前へ</button>
+ <button id="flip-btn" class="action-btn" onclick="flipCard()">🔄 裏返す</button>
+ <button id="next-btn" class="action-btn" onclick="nextCard()">次へ ▶</button>
+ </div>
+
+ <div class="controls" id="controls-back" style="display: none;">
+ <button id="back-to-front-btn" class="eval-btn" onclick="returnToFront()">🔙 表面に戻る</button>
+ <button id="wrong-btn" class="eval-btn" onclick="markIncorrect()">❌ 覚えてない</button>
+ <button id="correct-btn" class="eval-btn" onclick="markCorrect()">◯ 完璧！</button>
+ </div>
+
+ <script>
+ const cardsData = [
+{"en": "\"It's not that I can't compose anymore. It's that I refuse.\" Yeah.", "jp": "「作曲できなくなったのではない。拒否しているだけだ」……フン。[cite: 2]", "note": "It's not that..., it's that... は「〜というわけではない、〜なのだ」という対比の必須構文。refuse は「拒絶する、拒む」。[cite: 2]"},
+{"en": "Hey!", "jp": "おい！[cite: 2]", "note": ""},
+{"en": "North No.2.", "jp": "ノース2号。[cite: 2]", "note": ""},
+{"en": "North No.2! Hey!", "jp": "ノース2号！ おい！[cite: 2]", "note": ""},
+{"en": "Mmm, sounds like he really left this time.", "jp": "フン、今度は本当に出て行ったようだな。[cite: 2]", "note": "sounds like... は「〜のようだ、〜のように思われる」。leave の過去形 left。[cite: 2]"},
+{"en": "Maybe I can't compose anymore.", "jp": "本当はもう……曲が作れないのかもしれないな。[cite: 2]", "note": "not... anymore で「もう〜ない」。頑なな強がりから、自分自身の能力への不安と孤独を漏らすつぶやき。[cite: 2]"},
+{"en": "How long are you going to make me wait for him, eh?", "jp": "一体いつまで彼を待たせるつもりだ、ええ？[cite: 2]", "note": "make someone wait は使役（人に待たせる）。How long are you going to...? は「いつまで〜させるつもりなのか」と不満を表す表現。[cite: 2]"},
+{"en": "When is the replacement butler going to be here?", "jp": "代わりの執事はいつ到着するんだ？[cite: 2]", "note": "replacement は「後任、代わり」。butler は「執事」。[cite: 2]"},
+{"en": "Uh, this is Marshall calling from MCM Pictures.", "jp": "あー、MCMピクチャーズのマーシャルと申します。[cite: 2]", "note": "This is [Name] calling from [Company] は電話での定番の自己紹介フレーズ。[cite: 2]"},
+{"en": "So you're just a movie guy.", "jp": "なんだ、ただの映画関係者か。[cite: 2]", "note": "movie guy は「映画屋、映画関係者」。just で失望感を表現。[cite: 2]"},
+{"en": "You sound a bit disappointed, Sir Duncan. Something wrong?", "jp": "少しがっかりされているようですね、ダンカン卿。何かありましたか？[cite: 2]", "note": "sound + 形容詞 で「〜のように聞こえる、思われる」。Something wrong? は Is something wrong? の省略。[cite: 2]"},
+{"en": "No, I just had to fire my butler robot the other day, that's all.", "jp": "いや、先日執事ロボットをクビにしたばかりなだけだ。それだけだよ。[cite: 2]", "note": "fire は「（人を）解雇する、クビにする」。the other day は「先日、この間」。that's all で「ただそれだけだ」。[cite: 2]"},
+{"en": "Well, get on with it, then.", "jp": "まあいい、要件を言いたまえ。[cite: 2]", "note": "get on with it は「（ぐずぐずせずに）さっさと進める、要件に入る」という口語表現。[cite: 2]"},
+{"en": "Yes, sir. I'm calling because we'd love to have your work in an upcoming film.", "jp": "はい。実は、近く公開予定の映画で先生の曲を使わせていただきたく、お電話いたしました。[cite: 2]", "note": "upcoming film は「公開予定の（近く公開される）映画」。would love to... は「ぜひ〜したい」。[cite: 2]"},
+{"en": "Oh. Sounds like a job offer.", "jp": "ほう。仕事の依頼（オファー）のようだな。[cite: 2]", "note": ""},
+{"en": "Tell me what you have in mind, and I'll decide if it's worth my energy.", "jp": "どんな構想か言ってみなさい。労力をかける価値があるか私が判断しよう。[cite: 2]", "note": "what you have in mind は「あなたが考えている構想・プラン」。be worth one's energy [time] は「〜の労力［時間］を費やす価値がある」。[cite: 2]"},
+{"en": "That's very kind of you, sir.", "jp": "ありがとうございます、ダンカン先生。[cite: 2]", "note": "That's very kind of you は感謝を表す定番表現。[cite: 2]"},
+{"en": "Basically, we would love to license one of your old scores for use in this project.", "jp": "要するに、先生の過去の旧作スコア（楽曲）ライセンスを今回の作品で使用させていただきたいのです。[cite: 2]", "note": "license は動詞で「〜の使用許諾（ライセンス）を与える」。score は映画音楽や楽譜。[cite: 2]"},
+{"en": "What? Don't you want to use a new soundtrack?", "jp": "何だと？ 新しいサントラ（新曲）を使いたくはないのか？[cite: 2]", "note": "否定疑問文 Don't you want to...? で「〜したくないのか？」という驚きと怒り。[cite: 2]"},
+{"en": "Oh! Uh, I was of the understanding that you had retired from composing.", "jp": "あ、ええと……先生はすでに作曲業を引退されたと認識しておりまして。[cite: 2]", "note": "be of the understanding that... は「〜と理解している、認識している」というフォーマルな表現。retire from... は「〜から引退する」。[cite: 2]"},
+{"en": "Use the damn thing any way you like.", "jp": "クソ曲など、好きにどうとでも使うがいい！[cite: 2]", "note": "the damn thing は吐き捨てるような表現。any way you like は「あなたの好きなように」。[cite: 2]"},
+{"en": "Oh! Sir Duncan, I meant no--", "jp": "ああ！ ダンカン先生、私はそのようなつもりでは……[cite: 2]", "note": "I meant no [offense] は「そんな悪気（失礼）のつもりではなかった」。[cite: 2]"},
+{"en": "You have one new message.", "jp": "新しいメッセージが1件あります。[cite: 2]", "note": ""},
+{"en": "Uh, Russell here, from the Planning Office at the British Philharmonic Orchestra.", "jp": "あー、ロイヤル・フィルハーモニー管弦楽団の企画室のラッセルです。[cite: 2]", "note": "British Philharmonic Orchestra は英国の有名オーケストラ。[cite: 2]"},
+{"en": "We'd been in talks about perhaps mounting one of your works for our upcoming season.", "jp": "来シーズンの公演で先生の作品を上演する件についてご相談しておりましたが、[cite: 2]", "note": "be in talks about... は「〜について協議［検討］中である」。mount は「（演劇や演奏会を）上演する、催す」。[cite: 2]"},
+{"en": "Unfortunately, we're not in a position to follow up on that.", "jp": "あいにくですが、進展させられる状況（立場）ではなくなってしまいまして。[cite: 2]", "note": "be not in a position to... は「〜できる立場［状況］にない」というビジネスでの丁寧なお断りフレーズ。follow up on... は「〜を追究する、進展させる」。[cite: 2]"},
+{"en": "You have my apologies. I hope we get to collaborate in the future.", "jp": "大変申し訳ありません。将来またコラボレーションできることを願っております。[cite: 2]", "note": "You have my apologies. は「お詫び申し上げます（I apologize.）」。get to + 動詞 は「〜する機会を得る」。[cite: 2]"},
+{"en": "I think that melody is the missing portion of the song you currently struggle to finish.", "jp": "その旋律こそ、ダンカン先生が現在完成させようと苦心されている曲の、欠けていた部分なのだと思います。[cite: 2]", "note": "missing portion は「欠けている部分、不完全な箇所」。struggle to + 動詞 は「〜しようと苦闘する、もがく」。[cite: 2]"},
+{"en": "Sir Duncan.", "jp": "ダンカン先生。[cite: 2]", "note": ""},
+{"en": "I thought you'd want to know that I am back.", "jp": "私が戻ったことを、先生にお知らせしておこうと思いまして。[cite: 2]", "note": "I thought you'd want to know that... は「〜をお知りになりたいかと思いまして」という非常に丁寧で配慮のある前置き表現。[cite: 2]"},
+{"en": "Now what? Didn't I tell you to get out of here?", "jp": "今度は何だ？ 出て行けと言わなかったか？[cite: 2]", "note": "Now what? は「今度は何だ？ 一体どうしたというんだ？」。Didn't I tell you to...? で「〜しろと言わなかったか？」。[cite: 2]"},
+{"en": "I did leave, as you requested.", "jp": "先生のご要望通り、一度立ち去りました。[cite: 2]", "note": "I did leave の did は動詞の強調（確かに立ち去った）。as requested は「ご要望通りに」。[cite: 2]"},
+{"en": "I went to your hometown in Bohemia.", "jp": "先生の故郷であるボヘミアに行ってまいりました。[cite: 2]", "note": ""},
+{"en": "What could have possessed you to make that trip?", "jp": "一体全体、何に取り憑かれてそんな旅をしたというんだ！？[cite: 2]", "note": "What could have possessed someone to do...? は「一体全体どういう風の吹き回しで（何に取り憑かれて）〜したのか」という疑問・詰問表現。[cite: 2]"},
+{"en": "My purpose there was to archive old music.", "jp": "そちらを訪れた目的は、古い音楽を記録・保存（アーカイブ）することでした。[cite: 2]", "note": "archive は「記録を保存する、データベース化する」。[cite: 2]"},
+{"en": "In the process of collecting many folk songs from the region,", "jp": "その地域の多くの民謡を収集する過程で、[cite: 2]", "note": "In the process of -ing は「〜する過程で」。folk song は「民謡、伝承歌」。[cite: 2]"},
+{"en": "I was able to find it.", "jp": "ついに見つけることができたのです。[cite: 2]", "note": ""},
+{"en": "The melody you continue to hum when you are asleep.", "jp": "先生が眠っている間に口ずさみ続けていらっしゃる、あの旋律を。[cite: 2]", "note": "hum は「ハミングする、鼻歌を歌う、口ずさむ」。[cite: 2]"},
+{"en": "I know how it goes.", "jp": "どのように歌うのか、分かりました。[cite: 2]", "note": "I know how it goes. は「（曲や詩などが）どういうメロディ［展開］か分かる」という定番フレーズ。[cite: 2]"},
+{"en": "Please allow me to sing it for you.", "jp": "どうか、先生のために歌わせていただきたく存じます。[cite: 2]", "note": "Please allow me to + 動詞 は「私に〜させてください」という最大級にフォーマルで丁寧な依頼表現。[cite: 2]"},
+{"en": "No, damn it! Singing should be for real people only!", "jp": "ふざけるな、クソッ！ 歌というのは本物の人間のためのものだ！[cite: 2]", "note": "real people で「本物の人間（生身の人間）」。ロボットの歌唱を拒否するダンカン。[cite: 2]"},
+{"en": "Why would you try to drag my nightmare out into the light of day?", "jp": "なぜお前は私の悪夢を明るい白日の下に引きずり出そうとするんだ！？[cite: 2]", "note": "drag A out into the light of day は「Aを白日の下に引きずり出す、曝露する」。[cite: 2]"},
+{"en": "We don't remember everything like you machines, and that is a blessing!", "jp": "我々人間はお前たち機械のようにすべてを覚えているわけではない。探せばそれこそが恵みなのだ！[cite: 2]", "note": "blessing は「恵み、恩恵、幸運」（忘却できることの救いを表現）。[cite: 2]"},
+{"en": "Your dream is not a nightmare, sir. You deserve to know that.", "jp": "先生の夢は悪夢ではありません。先生はその真実を知る資格がおありになります。[cite: 2]", "note": "deserve to know は「〜を知る権利［資格］がある」。[cite: 2]"},
+{"en": "To lose the dreams I have at night would be a mercy, but yours is different.", "jp": "私が夜に見る夢を失えるのであれば、それはまさに慈悲となりますが、先生の夢は違います。[cite: 2]", "note": "mercy は「慈悲、救い」。戦争の記憶に苦しむノース2号にとって、忘却こそが救いであることを示す悲しい対比。[cite: 2]"},
+{"en": "Just as you said, I am nothing more than a weapon.", "jp": "先生がおっしゃった通り、私は兵器以外の何物でもありません。[cite: 2]", "note": "nothing more than... は「〜に過ぎない、〜以外の何物でもない」（= only / merely）。[cite: 2]"},
+{"en": "During my time in the 39th Central Asian War, I neutralized many of the foe's units.", "jp": "第39次中アジア戦争に従軍中、私は敵の多くの部隊を無力化しました。[cite: 2]", "note": "neutralize は軍事用語で「無力化する、撃破する」。foe は「敵（enemy）」。[cite: 2]"},
+{"en": "No, I decimated them. Tens of thousands of my own kind.", "jp": "いいえ、殲滅したのです。何万体もの同胞たちを。[cite: 2]", "note": "decimate は「大量殺戮する、壊滅させる」。Tens of thousands は「何万もの」。my own kind は「同胞、自分の同類（ロボット）」。[cite: 2]"},
+{"en": "And those memories,", "jp": "そしてそれらの記憶、[cite: 2]", "note": ""},
+{"en": "the memories of the countless deaths by my hand,", "jp": "私の手によって奪われた数え切れない命の記憶が、[cite: 2]", "note": "countless は「数え切れない」。by my hand は「私の手によって」。[cite: 2]"},
+{"en": "my artificial intelligence plays them back again and again.", "jp": "私の人工知能の中で何度も何度も再生されるのです。[cite: 2]", "note": "play back は「（録音・映像・記憶などを）再生する」。[cite: 2]"},
+{"en": "While in Bohemia, I met an ancient man.", "jp": "ボヘミアにおりました折り、一人の老爺に出会いました。[cite: 2]", "note": "ancient はここでは非常に高齢な老人を指す詩的表現。[cite: 2]"},
+{"en": "He had a wealth of knowledge about folk songs, including the song in your dream.", "jp": "そのお方は民謡について豊かな知識をお持ちで、先生の夢の中の歌のこともご存知でした。[cite: 2]", "note": "a wealth of knowledge は「豊富な知識、豊かな知見」。[cite: 2]"},
+{"en": "He said that this one young woman in particular", "jp": "そのお方がおっしゃるには、特に一人の若い女性が、[cite: 2]", "note": "in particular は「特に」。[cite: 2]"},
+{"en": "used to sing it so beautifully, he remembers even now.", "jp": "今でも覚えているほど、非常に美しくその歌を歌っていたそうです。[cite: 2]", "note": "used to sing は「かつて歌っていた」。so... that... 構文の that 省略。[cite: 2]"},
+{"en": "That young woman was your mother.", "jp": "その若い女性こそが、先生のお母様だったのです。[cite: 2]", "note": ""},
+{"en": "I have so much data in my mind about you.", "jp": "私の頭脳には、先生に関する膨大なデータが入っております。[cite: 2]", "note": ""},
+{"en": "It includes facts about your mother you never got to know.", "jp": "その中には、先生が知る機会のなかったお母様に関する真実も含まれています。[cite: 2]", "note": "never got to know は「知る機会を得られなかった」。[cite: 2]"},
+{"en": "It felt that way, but as your chronic illness grew more pronounced,", "jp": "捨てられたように感じられたでしょうが、先生の持病が次第に悪化していく中で、[cite: 2]", "note": "chronic illness は「持病、慢性疾患」。pronounced は「顕著な、はっきりした」。[cite: 2]"},
+{"en": "she did not abandon you.", "jp": "お母様は先生を見捨てられたわけではありませんでした。[cite: 2]", "note": "abandon は「見捨てる、見殺しにする」。did の強調。[cite: 2]"},
+{"en": "The rich man you hated for stealing her affections,", "jp": "お母様の愛情を奪ったとして先生が憎んでいたあのお金持ちの男性を、[cite: 2]", "note": "affection は「愛情、愛着」。[cite: 2]"},
+{"en": "she sought him out in order to fund the treatment that saved your life.", "jp": "お母様は先生の命を救う治療費を頼むために、自ら探し求めたのです。[cite: 2]", "note": "seek out の過去形 sought out（捜し出す、頼る）。in order to fund... で「〜の費用を工面するために」。[cite: 2]"},
+{"en": "It's true. The rogue doctor who operated on you charged an astronomical fee,", "jp": "事実です。先生の手術執刀を行ったあの闇医者は、天文的（巨額）な費用を要求しました。[cite: 2]", "note": "rogue doctor は「無免許の医者、闇医者（ブラック・ジャックのオマージュ）」。astronomical fee は「天文学的な（膨大な）費用」。[cite: 2]"},
+{"en": "and that was the only way she could afford it.", "jp": "そしてそれが、お母様がその費用を支払うことのできる唯一の方法だったのです。[cite: 2]", "note": "afford は「（費用などを）負担できる、支払う余裕がある」。[cite: 2]"},
+{"en": "She did not throw you away when she sent you abroad.", "jp": "先生を海外へ送られた時、お母様は先生を投げ捨てたのではありません。[cite: 2]", "note": "throw away は「投げ捨てる、見捨てる」。send abroad は「海外へ送り出す」。[cite: 2]"},
+{"en": "In the weeks and months, as your vision slowly dimmed,", "jp": "先生の視力がゆっくりと衰えていった数ヶ月の間、[cite: 2]", "note": "dim は「（光や視力が）暗くなる、薄れる、衰える」。[cite: 2]"},
+{"en": "your mother was never far, Sir Duncan.", "jp": "お母様は決して遠く離れることなく、ずっと傍におられました、ダンカン先生。[cite: 2]", "note": ""},
+{"en": "Learning how much you hated her, she couldn't bring herself to reach out.", "jp": "先生がいかにご自分を憎んでいるかを知り、自ら声をかける（手を差し伸べる）ことができなかったのです。[cite: 2]", "note": "cannot bring oneself to + 動詞 は「（感情などが邪魔をして）どうしても〜する気になれない、〜できない」。reach out は「手を差し伸べる、連絡を取る」。[cite: 2]"},
+{"en": "The divide she would have had to repair seemed too great.", "jp": "修復しなければならない二人の隔たりが、あまりに大きすぎるように思えたのです。[cite: 2]", "note": "divide は名詞で「隔たり、亀裂、不和」。[cite: 2]"},
+{"en": "Uh, she was there?", "jp": "母さんが……そこにいたというのか？[cite: 2]", "note": ""},
+{"en": "- That can't be.- It's the truth.", "jp": "- （ダンカン）そんなはずはない……！- （ノース2号）真実でございます。[cite: 2]", "note": ""},
+{"en": "When you recall your childhood in Bohemia,", "jp": "ボヘミアでの幼少期を思い返される時、[cite: 2]", "note": "recall は「〜を思い出す、回想する」。[cite: 2]"},
+{"en": "isn't there a core memory that you've forgotten about?", "jp": "先生が忘れ去ってしまっている、最も大切な『中核の記憶』がございませんか？[cite: 2]", "note": "core memory は「核となる記憶、根幹の思い出」。否定疑問文 isn't there...? で「〜がないでしょうか？」と優しく問いかける。[cite: 2]"},
+{"en": "The ancient villager remembered.", "jp": "あの老爺は覚えておりました。[cite: 2]", "note": ""},
+{"en": "You and your mother would sing that old folk song together", "jp": "先生とお母様は、共に手をつなぎ合い、[cite: 2]", "note": "would + 動詞原形 は過去の習慣（よく〜したものだった）。[cite: 2]"},
+{"en": "hand-in-hand until the very last note", "jp": "最後の音符（旋律）に至るまで、あの古い民謡を歌っていたと。[cite: 2]", "note": "hand-in-hand は「手を取り合って」。until the very last note は「最後の最後の1音まで」。[cite: 2]"},
+{"en": "as the setting sun turned the fields into gold.", "jp": "沈みゆく夕日が、一面の野原を金色に染め上げていく中で。[cite: 2]", "note": "setting sun は「沈む夕日」。turn A into B で「AをBに変える」。[cite: 2]"},
+{"en": "Mother.", "jp": "お母さん……。[cite: 2]", "note": ""},
+{"en": "How can I forget? [crying]", "jp": "どうして……忘れられたんだ……！（涙を流す）[cite: 2]", "note": "激しい憎しみが解け、母親の真実の愛を悟ったダンカンの感涙。[cite: 2]"},
+{"en": "I apologize, sir,", "jp": "申し訳ありません、先生。[cite: 2]", "note": ""},
+{"en": "for how I sang it.", "jp": "私のつたない歌い方をお許しください。[cite: 2]", "note": "感情を持たないはずのロボットが、心を込めて歌った謙遜の言葉。[cite: 2]"},
+{"en": "You deserve to remember all the pieces of your dream", "jp": "先生は、ご自身の夢のすべてのピースを思い出す資格がおありになります。[cite: 2]", "note": "pieces of your dream は「夢の欠片、記憶の断片」。[cite: 2]"},
+{"en": "as I deserve to remember mine.", "jp": "私が、私の思い出を覚えているべきであるのと同様に。[cite: 2]", "note": ""},
+{"en": "North No.2?", "jp": "ノース2号か？[cite: 2]", "note": ""},
+{"en": "I want you to stay. Don't you ever go back to the battlefield.", "jp": "ここにいてくれ。二度と戦場になど戻るんじゃないぞ。[cite: 2]", "note": "Don't you ever + 動詞 は強い念押し・命令（二度と〜するな）。ノース2号を「家族・弟子」として受け入れた感動のセリフ。[cite: 2]"},
+{"en": "Would you like me to teach you the piano?", "jp": "私が……ピアノを教えてやろうか？[cite: 2]", "note": "Would you like me to + 動詞? は「私に〜してほしいかい？」という温かい申し出。[cite: 2]"},
+{"en": "Yes, sir.", "jp": "はい、先生。[cite: 2]", "note": ""},
+{"en": "North No.2!", "jp": "ノース2号！[cite: 2]", "note": ""},
+{"en": "Hey, North No.2!", "jp": "おい、ノース2号！[cite: 2]", "note": ""},
+{"en": "Yes, Sir Duncan. I am here.", "jp": "はい、ダンカン先生。ここにおります。[cite: 2]", "note": ""},
+{"en": "I've finally finished it! Give it a listen!", "jp": "ついに完成したぞ！ 聴いてくれ！[cite: 2]", "note": "Give it a listen! は「聴いてみてくれ！」という口語表現。[cite: 2]"},
+{"en": "Yes, sir. I would love to hear it in its entirety.", "jp": "はい、先生。ぜひ全曲を通して拝聴したく存じます。[cite: 2]", "note": "in its entirety は「全体を、全編を通して、余すところなく」。[cite: 2]"},
+{"en": "- However…- Hmm? What's the matter?", "jp": "- （ノース2号）しかし……- （ダンカン）む？ どうしたんだ？[cite: 2]", "note": "What's the matter? は「どうかしたのか？」。[cite: 2]"},
+{"en": "I am picking up something approaching at a high velocity.", "jp": "高速で接近してくる何者かを感知いたしました。[cite: 2]", "note": "pick up は「（レーダーやセンサーで）探知する、捉える」。approach は「接近する」。at a high velocity は「高速で（high speed）」。[cite: 2]"},
+{"en": "Uh, like what?", "jp": "何者だって？[cite: 2]", "note": "like what? は「例えばどんなものだ？」。[cite: 2]"},
+{"en": "Maybe one of your robot friends finally decided to pay you a visit.", "jp": "お前のロボットの友人の一人が、ようやく訪ねてくる気になったのかもしれんな。[cite: 2]", "note": "pay a visit は「（人を）訪問する、訪ねる」。[cite: 2]"},
+{"en": "There was an incident up in the Alps a few days ago. Did you hear reports about it?", "jp": "数日前、アルプスで事件がございました。ニュースでお聞きになりましたか？[cite: 2]", "note": "incident は「事件、事故」。[cite: 2]"},
+{"en": "Something up in the Alps?", "jp": "アルプスでの何かだと？[cite: 2]", "note": ""},
+{"en": "Oh, yes. I did catch a news segment", "jp": "ああ、そういえばニュースの断片を耳にしたな。[cite: 2]", "note": "catch a news segment は「ニュースの一部［番組］を聞く［見る］」。[cite: 2]"},
+{"en": "on how that Mont Blanc robot was destroyed by a tornado.", "jp": "あのモンブランというロボットが竜巻で破壊されたというやつか。[cite: 2]", "note": "モンブランの不審死を「竜巻」と報じる世間。[cite: 2]"},
+{"en": "What of it?", "jp": "それがどうかしたのか？[cite: 2]", "note": "What of it? は「それがどうしたというんだ？（What about it?）」。[cite: 2]"},
+{"en": "Just now, sir, a tornado was reported 100 kilometers from our position.", "jp": "たった今、先生。当方の位置から100キロ地点で竜巻が発生したとの報がありました。[cite: 2]", "note": "position は「現在地、位置」。[cite: 2]"},
+{"en": "Hmm?", "jp": "ん？[cite: 2]", "note": ""},
+{"en": "An unknown assailant is on a path of direct approach.", "jp": "正体不明の襲撃者が、こちらへまっすぐ接近してきております。[cite: 2]", "note": "unknown assailant は「正体不明の襲撃者」。on a path of direct approach は「直進ルートで接近中」。[cite: 2]"},
+{"en": "- Hey!- I'll return very soon.", "jp": "- （ダンカン）おい！- （ノース2号）すぐに戻ってまいります。[cite: 2]", "note": "return very soon で「すぐ戻る」。自らの身を挺してダンカンを守ろうとするノース2号。[cite: 2]"},
+{"en": "Wait, North No.2!", "jp": "待て、ノース2号！[cite: 2]", "note": ""},
+{"en": "North No.2!", "jp": "ノース2号！[cite: 2]", "note": ""},
+{"en": "Where did you go?", "jp": "どこへ行ったんだ！？[cite: 2]", "note": ""},
+{"en": "Come back!", "jp": "戻ってこい！[cite: 2]", "note": ""},
+{"en": "That sound I heard just now… What could it be?", "jp": "たった今聞こえたあの音は……一体何なのだ？[cite: 2]", "note": "上空からの激しい戦闘音。[cite: 2]"},
+{"en": "I can't tell what's going on up there!", "jp": "上で何が起きているのか、私には何も見えない！[cite: 2]", "note": "I can't tell は「分からない、見分けがつかない」。盲目のダンカンの焦燥。[cite: 2]"},
+{"en": "An explosion.", "jp": "大爆発だ……。[cite: 2]", "note": ""},
+{"en": "Huh?", "jp": "え……？[cite: 2]", "note": ""},
+{"en": "I hear it.", "jp": "聞こえる……。[cite: 2]", "note": ""},
+{"en": "I hear him singing.", "jp": "彼の歌声が聞こえる。[cite: 2]", "note": "知覚動詞 hear + 目的語 + -ing（〜が...しているのが聞こえる）。[cite: 2]"},
+{"en": "I feel it spreading to fill the sky.", "jp": "空一杯に広がっていくのが感じられる。[cite: 2]", "note": "feel + 目的語 + -ing（〜が...しているのを感じる）。[cite: 2]"},
+{"en": "I hear your voice, my boy.", "jp": "お前の声が聞こえるぞ、我が子よ（ノース2号よ）。[cite: 2]", "note": "my boy は息子や弟子に対する深い愛情を込めた呼びかけ。[cite: 2]"},
+{"en": "You're singing our song and with such feeling.", "jp": "私たちの歌を……なんて感情を込めて歌っているのだ。[cite: 2]", "note": "with such feeling は「これほどの情愛・感情を込めて」。[cite: 2]"},
+{"en": "Time to come back home, North No.2. I think that's enough singing for one day.", "jp": "家に帰る時間だぞ、ノース2号。今日の歌の練習はもう十分だろう。[cite: 2]", "note": "Time to + 動詞 は「〜の時間だ」。that's enough for one day は「今日はこれで十分だ」。[cite: 2]"},
+{"en": "Hurry on home now.", "jp": "さあ、早く帰っておいで。[cite: 2]", "note": "Hurry on home は「急いで家に帰る」。[cite: 2]"},
+{"en": "You're going to be late for piano practice.", "jp": "ピアノの練習に遅れてしまうぞ……。（号泣するダンカン）[cite: 2]", "note": "be late for... は「〜に遅刻する、遅れる」。大空散華したノース2号を想う哀切極まる幕切れ。[cite: 2]"},
+{"en": "It's super awesome!", "jp": "すっごくカッコいい（すごい）！[cite: 2]", "note": "場面転換して日本・東京へ。super awesome は子供たちが使う「超すごい、最高」。[cite: 2]"},
+{"en": "Really?", "jp": "本当に？[cite: 2]", "note": ""},
+{"en": "Ah. Found a snail, did you?", "jp": "あ、カタツムリを見つけたんだね？[cite: 2]", "note": "付加疑問 ..., did you? で子供の行動をやさしく確認する表現。アトムの優しさと人間らしさ。[cite: 2]"},
+{"en": "I did.", "jp": "うん、見つけたよ。[cite: 2]", "note": ""},
+{"en": "It's very nice to meet you.", "jp": "初めてお目にかかります。[cite: 2]", "note": "It's very nice to meet you. は丁寧な初対面の挨拶。[cite: 2]"},
+{"en": "I believe your name is Atom, right?", "jp": "君のお名前は「アトム」とおっしゃいましたね？[cite: 2]", "note": "I believe... は「〜と認識しております」。[cite: 2]"},
+{"en": "Uh-huh.", "jp": "うん（そうだよ）。[cite: 2]", "note": "Uh-huh はカジュアルな肯定的返答（「うん」）。[cite: 2]"}
+ ];
+
+ // ---- データマイグレーションと初期化 ----
+ const savedEvaluated = localStorage.getItem('pluto_1_4_evaluated');
+ const savedDates = localStorage.getItem('pluto_1_4_dates');
+ const savedSrs = localStorage.getItem('pluto_1_4_srs');
+
+ let evaluatedCards = savedEvaluated ? JSON.parse(savedEvaluated) : new Array(cardsData.length).fill(false);
+ let answerDates = savedDates ? JSON.parse(savedDates) : new Array(cardsData.length).fill(null);
+ 
+let srsData = savedSrs ? JSON.parse(savedSrs) : new Array(cardsData.length).fill(null).map(() => ({
+ interval: 0,
+ ease: 2.5,
+ repetitions: 0,
+ nextReview: null
+ }));
+
+ let currentCardIndex = 0;
+ let correctCount = evaluatedCards.filter(Boolean).length;
+ let isFront = true;
+ let currentMode = 'all'; // 'all', 'unanswered', 'review', 'incorrect'
+
+ const frontSide = document.getElementById('front-side');
+ const backSide = document.getElementById('back-side');
+ const frontEngContent = document.getElementById('front-eng-content');
+ const backEngContent = document.getElementById('back-eng-content');
+ const japContent = document.getElementById('jap-content');
+ const noteContent = document.getElementById('note-content');
+ 
+const controlsFront = document.getElementById('controls-front');
+ const controlsBack = document.getElementById('controls-back');
+ const progressText = document.getElementById('progress-text');
+ const scoreText = document.getElementById('score-text');
+ const playBtn = document.getElementById('play-audio-btn');
+ const dateBadge = document.getElementById('date-badge');
+ const srsBadge = document.getElementById('srs-badge');
+ const modeIndicator = document.getElementById('mode-indicator');
+
+ function saveProgress() {
+ localStorage.setItem('pluto_1_4_evaluated', JSON.stringify(evaluatedCards));
+ localStorage.setItem('pluto_1_4_dates', JSON.stringify(answerDates));
+ localStorage.setItem('pluto_1_4_srs', JSON.stringify(srsData));
+ }
+
+ // YYYY-MM-DD 形式で日付を取得（比較用）
+ function getTodayStringFormatted() {
+ const d = new Date();
+ const y = d.getFullYear();
+ const m = String(d.getMonth() + 1).padStart(2, '0');
+ const day = String(d.getDate()).padStart(2, '0');
+ return `${y}-${m}-${day}`;
+ }
+
+ // 指定日数を足した日付文字列を返す
+ function addDaysToDate(days) {
+ const d = new Date();
+ d.setDate(d.getDate() + days);
+ const y = d.getFullYear();
+ const m = String(d.getMonth() + 1).padStart(2, '0');
+ const day = String(d.getDate()).padStart(2, '0');
+ return `${y}-${m}-${day}`;
+ }
+
+ function getVisibleIndices() {
+ let indices = [];
+ const today = getTodayStringFormatted();
+ 
+for (let i = 0; i < cardsData.length; i++) {
+ if (currentMode === 'all') {
+ indices.push(i);
+ } else if (currentMode === 'unanswered') {
+ if (!answerDates[i]) indices.push(i);
+ } else if (currentMode === 'incorrect') {
+ if (answerDates[i] && !evaluatedCards[i]) indices.push(i);
+ } else if (currentMode === 'review') {
+ // 次回の復習日が設定されていて、かつ今日以前の場合
+ if (srsData[i].nextReview && srsData[i].nextReview <= today) {
+ indices.push(i);
+ }
+ }
+ }
+ return indices;
+ }
+
+ function updateUI() {
+ let indices = getVisibleIndices();
+ 
+if (indices.length === 0) {
+ frontSide.style.display = 'flex';
+ backSide.style.display = 'none';
+ controlsFront.style.display = 'none';
+ controlsBack.style.display = 'none';
+ frontEngContent.innerHTML = "<div class='empty-state'>🎉 このモードの対象カードはありません！<br>上のボタンから別のモードに切り替えてね。</div>";
+ dateBadge.style.display = 'none';
+ srsBadge.style.display = 'none';
+ playBtn.style.display = 'none';
+ progressText.textContent = `- / ${cardsData.length}`;
+ scoreText.textContent = `正解数: ${correctCount}`;
+ return;
+ }
+
+ dateBadge.style.display = 'inline-block';
+ srsBadge.style.display = 'block';
+ playBtn.style.display = 'flex';
+
+ if (!indices.includes(currentCardIndex)) {
+ currentCardIndex = indices[0];
+ }
+
+ let pos = indices.indexOf(currentCardIndex);
+ progressText.textContent = `${pos + 1} / ${indices.length} (全${cardsData.length}問)`;
+ scoreText.textContent = `正解数: ${correctCount}`;
+
+ let dateStr = answerDates[currentCardIndex];
+ dateBadge.textContent = dateStr ? `最終回答日：${dateStr}` : `最終回答日：未回答`;
+
+ let srs = srsData[currentCardIndex];
+ if (srs.nextReview) {
+ srsBadge.textContent = `次回予定日: ${srs.nextReview} (連続正解: ${srs.repetitions}回)`;
+ } else {
+ srsBadge.textContent = `まだSRSに登録されていません`;
+ }
+
+ if (isFront) {
+ frontSide.style.display = 'flex';
+ backSide.style.display = 'none';
+ controlsFront.style.display = 'flex';
+ controlsBack.style.display = 'none';
+ } else {
+ frontSide.style.display = 'none';
+ backSide.style.display = 'flex';
+ controlsFront.style.display = 'none';
+ controlsBack.style.display = 'flex';
+ }
+
+ frontEngContent.textContent = cardsData[currentCardIndex].en;
+ backEngContent.textContent = cardsData[currentCardIndex].en;
+ japContent.textContent = cardsData[currentCardIndex].jp;
+ 
+if (cardsData[currentCardIndex].note) {
+ noteContent.style.display = 'block';
+ noteContent.textContent = "💡 " + cardsData[currentCardIndex].note;
+ } else {
+ noteContent.style.display = 'none';
+ }
+ }
+
+ function flipCard() {
+ isFront = !isFront;
+ updateUI();
+ }
+
+ function returnToFront() {
+ isFront = true;
+ updateUI();
+ }
+
+ function advanceCard(forward) {
+ let indices = getVisibleIndices();
+ if (indices.length === 0) {
+ updateUI();
+ return;
+ }
+
+ let pos = indices.indexOf(currentCardIndex);
+ 
+if (pos !== -1) {
+ if (forward) {
+ currentCardIndex = indices[(pos + 1) % indices.length];
+ } else {
+ // 前へボタンのループ処理
+ currentCardIndex = indices[(pos - 1 + indices.length) % indices.length];
+ }
+ } else {
+ let nextIdx = indices.find(i => i > currentCardIndex);
+ currentCardIndex = nextIdx !== undefined ? nextIdx : indices[0];
+ }
+ 
+isFront = true;
+ updateUI();
+ }
+
+ function nextCard() { advanceCard(true); }
+ function prevCard() { advanceCard(false); }
+
+ function markCorrect() {
+ // 従来のカウント用処理
+ let wasCorrect = evaluatedCards[currentCardIndex];
+ if (!wasCorrect) {
+ correctCount++;
+ evaluatedCards[currentCardIndex] = true;
+ }
+ answerDates[currentCardIndex] = getTodayStringFormatted();
+
+ // SRS (SM-2) アルゴリズムによる「完璧！」の処理
+ let cardSrs = srsData[currentCardIndex];
+ cardSrs.repetitions += 1;
+ 
+if (cardSrs.repetitions === 1) {
+ cardSrs.interval = 1; // 初回は1日後
+ } else if (cardSrs.repetitions === 2) {
+ cardSrs.interval = 6; // 2回目は6日後
+ } else {
+ cardSrs.interval = Math.round(cardSrs.interval * cardSrs.ease);
+ }
+ cardSrs.nextReview = addDaysToDate(cardSrs.interval);
+
+ saveProgress();
+ nextCard();
+ }
+
+ function markIncorrect() {
+ // 従来のカウント用処理
+ let wasCorrect = evaluatedCards[currentCardIndex];
+ if (wasCorrect) {
+ correctCount--;
+ evaluatedCards[currentCardIndex] = false;
+ }
+ answerDates[currentCardIndex] = getTodayStringFormatted();
+
+ // SRS (SM-2) アルゴリズムによる「覚えてない」の処理
+ let cardSrs = srsData[currentCardIndex];
+ cardSrs.repetitions = 0; // 連続正解リセット
+ cardSrs.interval = 1; // 翌日に再出題
+ cardSrs.ease = Math.max(1.3, cardSrs.ease - 0.2); // 定着度（難易度係数）を下げる
+ cardSrs.nextReview = addDaysToDate(cardSrs.interval);
+
+ saveProgress();
+ nextCard();
+ }
+
+ function setMode(mode) {
+ currentMode = mode;
+ 
+const modeNames = {
+ 'all': '📁 全問',
+ 'unanswered': '🆕 未回答',
+ 'review': '📅 今日の復習',
+ 'incorrect': '🎯 未正解'
+ };
+ modeIndicator.textContent = `現在のモード：${modeNames[mode]}`;
+
+ let indices = getVisibleIndices();
+ if (indices.length > 0) {
+ currentCardIndex = indices[0];
+ }
+ isFront = true;
+ updateUI();
+ }
+
+ function jumpToUnanswered() {
+ let indices = getVisibleIndices();
+ if (indices.length === 0) return;
+
+ let targetIndex = indices.find(index => !answerDates[index]);
+
+ if (targetIndex !== undefined) {
+ currentCardIndex = targetIndex;
+ } else {
+ currentCardIndex = indices[0];
+ }
+ 
+isFront = true;
+ updateUI();
+ }
+
+ function speakText() {
+ const textToSpeak = cardsData[currentCardIndex].en;
+ window.speechSynthesis.cancel();
+ const utterance = new SpeechSynthesisUtterance(textToSpeak);
+ utterance.lang = 'en-US';
+ utterance.rate = 0.9;
+ window.speechSynthesis.speak(utterance);
+ }
+
+ playBtn.addEventListener('click', speakText);
+
+ updateUI();
+ </script>
+</body>
+</html>
